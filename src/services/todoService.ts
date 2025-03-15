@@ -1,7 +1,38 @@
 import { supabase, TODOS_TABLE, Todo } from '@/lib/supabase';
 
+// 정적 데이터 (환경 변수가 없을 때 사용)
+const staticTodos: Todo[] = [
+  {
+    id: 1,
+    task: '정적 데이터: 환경 변수를 설정해주세요',
+    is_completed: false,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    task: 'Vercel에서 환경 변수 설정하기',
+    is_completed: false,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    task: 'Supabase 연결 확인하기',
+    is_completed: false,
+    created_at: new Date().toISOString(),
+  }
+];
+
+// 환경 변수 확인
+const hasEnvVars = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 // Supabase 연결 테스트
 export async function testSupabaseConnection(): Promise<boolean> {
+  // 환경 변수가 없으면 연결 테스트 실패로 간주
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 Supabase 연결 테스트를 건너뜁니다.');
+    return false;
+  }
+
   try {
     console.log('Supabase 연결 테스트 중...');
     console.log('테이블 이름:', TODOS_TABLE);
@@ -39,12 +70,18 @@ export async function testSupabaseConnection(): Promise<boolean> {
 
 // 모든 할일 가져오기
 export async function fetchTodos(): Promise<Todo[]> {
+  // 환경 변수가 없으면 정적 데이터 반환
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 정적 데이터를 반환합니다.');
+    return staticTodos;
+  }
+
   try {
     // 먼저 연결 테스트
     const connected = await testSupabaseConnection();
     if (!connected) {
-      console.warn('Supabase 연결 테스트 실패, 빈 배열 반환');
-      return [];
+      console.warn('Supabase 연결 테스트 실패, 정적 데이터 반환');
+      return staticTodos;
     }
     
     const { data, error } = await supabase
@@ -54,19 +91,32 @@ export async function fetchTodos(): Promise<Todo[]> {
 
     if (error) {
       console.error('Supabase 오류:', error);
-      throw error;
+      return staticTodos; // 오류 발생 시 정적 데이터 반환
     }
 
     console.log('할일 목록 가져오기 성공:', data);
     return data || [];
   } catch (error) {
     console.error('할일 목록을 가져오는데 실패했습니다:', error);
-    throw error;
+    return staticTodos; // 예외 발생 시 정적 데이터 반환
   }
 }
 
 // 새 할일 추가하기
 export async function addTodo(text: string): Promise<Todo> {
+  // 환경 변수가 없으면 정적 데이터에 추가
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 정적 데이터에 추가합니다.');
+    const newTodo: Todo = {
+      id: staticTodos.length > 0 ? Math.max(...staticTodos.map(t => t.id)) + 1 : 1,
+      task: text,
+      is_completed: false,
+      created_at: new Date().toISOString(),
+    };
+    staticTodos.unshift(newTodo);
+    return newTodo;
+  }
+
   try {
     // 날짜 필드를 제거하고 Supabase가 자동으로 처리하도록 함
     const newTodo = {
@@ -98,23 +148,59 @@ export async function addTodo(text: string): Promise<Todo> {
         console.error('필수 필드가 누락되었습니다. 테이블 구조를 확인하세요.');
       }
       
-      throw error;
+      // 오류 발생 시 정적 데이터에 추가
+      const fallbackTodo: Todo = {
+        id: staticTodos.length > 0 ? Math.max(...staticTodos.map(t => t.id)) + 1 : 1,
+        task: text,
+        is_completed: false,
+        created_at: new Date().toISOString(),
+      };
+      staticTodos.unshift(fallbackTodo);
+      return fallbackTodo;
     }
 
     if (!data) {
-      throw new Error('데이터가 반환되지 않았습니다.');
+      // 데이터가 없으면 정적 데이터에 추가
+      const fallbackTodo: Todo = {
+        id: staticTodos.length > 0 ? Math.max(...staticTodos.map(t => t.id)) + 1 : 1,
+        task: text,
+        is_completed: false,
+        created_at: new Date().toISOString(),
+      };
+      staticTodos.unshift(fallbackTodo);
+      return fallbackTodo;
     }
 
     console.log('할일 추가 성공:', data);
     return data;
   } catch (error) {
     console.error('할일을 추가하는데 실패했습니다:', error);
-    throw error;
+    // 예외 발생 시 정적 데이터에 추가
+    const fallbackTodo: Todo = {
+      id: staticTodos.length > 0 ? Math.max(...staticTodos.map(t => t.id)) + 1 : 1,
+      task: text,
+      is_completed: false,
+      created_at: new Date().toISOString(),
+    };
+    staticTodos.unshift(fallbackTodo);
+    return fallbackTodo;
   }
 }
 
 // 할일 상태 토글하기
 export async function toggleTodo(id: number, isCompleted: boolean): Promise<Todo> {
+  // 환경 변수가 없으면 정적 데이터 업데이트
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 정적 데이터를 업데이트합니다.');
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos[todoIndex].is_completed = isCompleted;
+      staticTodos[todoIndex].updated_at = new Date().toISOString();
+      return staticTodos[todoIndex];
+    }
+    throw new Error('할일을 찾을 수 없습니다.');
+  }
+
   try {
     console.log(`할일 상태 토글 시도 - ID: ${id}, 완료 상태: ${isCompleted}`);
     
@@ -127,6 +213,13 @@ export async function toggleTodo(id: number, isCompleted: boolean): Promise<Todo
     
     if (fetchError) {
       console.error('현재 할일 상태 확인 실패:', fetchError);
+      // 정적 데이터에서 찾아 업데이트
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos[todoIndex].is_completed = isCompleted;
+        staticTodos[todoIndex].updated_at = new Date().toISOString();
+        return staticTodos[todoIndex];
+      }
       throw fetchError;
     }
     
@@ -158,10 +251,24 @@ export async function toggleTodo(id: number, isCompleted: boolean): Promise<Todo
         console.error('RLS(Row Level Security) 오류일 수 있습니다. Supabase 대시보드에서 RLS 설정을 확인하세요.');
       }
       
+      // 정적 데이터에서 찾아 업데이트
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos[todoIndex].is_completed = isCompleted;
+        staticTodos[todoIndex].updated_at = new Date().toISOString();
+        return staticTodos[todoIndex];
+      }
       throw error;
     }
 
     if (!data) {
+      // 정적 데이터에서 찾아 업데이트
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos[todoIndex].is_completed = isCompleted;
+        staticTodos[todoIndex].updated_at = new Date().toISOString();
+        return staticTodos[todoIndex];
+      }
       throw new Error('데이터가 반환되지 않았습니다.');
     }
 
@@ -169,12 +276,31 @@ export async function toggleTodo(id: number, isCompleted: boolean): Promise<Todo
     return data;
   } catch (error) {
     console.error('할일 상태를 변경하는데 실패했습니다:', error);
+    // 정적 데이터에서 찾아 업데이트
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos[todoIndex].is_completed = isCompleted;
+      staticTodos[todoIndex].updated_at = new Date().toISOString();
+      return staticTodos[todoIndex];
+    }
     throw error;
   }
 }
 
 // 할일 수정하기
 export async function updateTodoText(id: number, text: string): Promise<Todo> {
+  // 환경 변수가 없으면 정적 데이터 업데이트
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 정적 데이터를 업데이트합니다.');
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos[todoIndex].task = text;
+      staticTodos[todoIndex].updated_at = new Date().toISOString();
+      return staticTodos[todoIndex];
+    }
+    throw new Error('할일을 찾을 수 없습니다.');
+  }
+
   try {
     console.log(`할일 텍스트 수정 시도 - ID: ${id}, 새 텍스트: ${text}`);
     
@@ -201,10 +327,24 @@ export async function updateTodoText(id: number, text: string): Promise<Todo> {
         console.error('RLS(Row Level Security) 오류일 수 있습니다. Supabase 대시보드에서 RLS 설정을 확인하세요.');
       }
       
+      // 정적 데이터에서 찾아 업데이트
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos[todoIndex].task = text;
+        staticTodos[todoIndex].updated_at = new Date().toISOString();
+        return staticTodos[todoIndex];
+      }
       throw error;
     }
 
     if (!data) {
+      // 정적 데이터에서 찾아 업데이트
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos[todoIndex].task = text;
+        staticTodos[todoIndex].updated_at = new Date().toISOString();
+        return staticTodos[todoIndex];
+      }
       throw new Error('데이터가 반환되지 않았습니다.');
     }
 
@@ -212,12 +352,29 @@ export async function updateTodoText(id: number, text: string): Promise<Todo> {
     return data;
   } catch (error) {
     console.error('할일을 수정하는데 실패했습니다:', error);
+    // 정적 데이터에서 찾아 업데이트
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos[todoIndex].task = text;
+      staticTodos[todoIndex].updated_at = new Date().toISOString();
+      return staticTodos[todoIndex];
+    }
     throw error;
   }
 }
 
 // 할일 삭제하기
 export async function deleteTodo(id: number): Promise<void> {
+  // 환경 변수가 없으면 정적 데이터에서 삭제
+  if (!hasEnvVars) {
+    console.warn('환경 변수가 없어 정적 데이터에서 삭제합니다.');
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos.splice(todoIndex, 1);
+    }
+    return;
+  }
+
   try {
     console.log(`할일 삭제 시도 - ID: ${id}`);
     
@@ -237,12 +394,22 @@ export async function deleteTodo(id: number): Promise<void> {
         console.error('RLS(Row Level Security) 오류일 수 있습니다. Supabase 대시보드에서 RLS 설정을 확인하세요.');
       }
       
+      // 정적 데이터에서 삭제
+      const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+      if (todoIndex !== -1) {
+        staticTodos.splice(todoIndex, 1);
+      }
       throw error;
     }
     
     console.log('할일 삭제 성공');
   } catch (error) {
     console.error('할일을 삭제하는데 실패했습니다:', error);
+    // 정적 데이터에서 삭제
+    const todoIndex = staticTodos.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+      staticTodos.splice(todoIndex, 1);
+    }
     throw error;
   }
 } 

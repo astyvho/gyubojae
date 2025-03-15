@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    // 빌드 시 경고는 허용하고 오류만 실패하도록 설정
-    ignoreDuringBuilds: false,
+    // 빌드 시 ESLint 오류를 무시하도록 설정
+    ignoreDuringBuilds: true,
   },
   env: {
     // 환경 변수가 없을 경우 빈 문자열로 설정

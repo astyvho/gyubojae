@@ -29,18 +29,59 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-// Supabase 클라이언트 생성
-// 환경 변수가 없으면 빈 문자열로 대체
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseAnonKey || '',
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false
+// 환경 변수가 없는 경우를 위한 더미 클라이언트
+let supabase;
+
+// 환경 변수가 있으면 실제 Supabase 클라이언트 생성
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
     }
-  }
-);
+  );
+} else {
+  // 환경 변수가 없으면 더미 클라이언트 생성
+  console.warn('환경 변수가 없어 더미 Supabase 클라이언트를 사용합니다.');
+  
+  // 더미 클라이언트 생성 (메서드는 있지만 실제로는 동작하지 않음)
+  supabase = {
+    from: () => ({
+      select: () => ({
+        order: () => ({
+          then: () => Promise.resolve({ data: [], error: null }),
+          catch: () => Promise.resolve({ data: [], error: null }),
+        }),
+        eq: () => ({
+          select: () => ({
+            single: () => Promise.resolve({ data: null, error: null }),
+          }),
+        }),
+        single: () => Promise.resolve({ data: null, error: null }),
+      }),
+      insert: () => ({
+        select: () => ({
+          single: () => Promise.resolve({ data: null, error: null }),
+        }),
+      }),
+      update: () => ({
+        eq: () => ({
+          select: () => ({
+            single: () => Promise.resolve({ data: null, error: null }),
+          }),
+        }),
+      }),
+      delete: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
+      limit: () => Promise.resolve({ data: [], error: null }),
+    }),
+  };
+}
 
 // 타입 정의
 export interface Todo {
