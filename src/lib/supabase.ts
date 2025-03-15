@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // 환경 변수 확인
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // 환경 변수가 없는 경우를 위한 더미 클라이언트
-let supabase;
+let supabase: SupabaseClient;
 
 // 환경 변수가 있으면 실제 Supabase 클라이언트 생성
 if (supabaseUrl && supabaseAnonKey) {
@@ -80,7 +80,7 @@ if (supabaseUrl && supabaseAnonKey) {
       }),
       limit: () => Promise.resolve({ data: [], error: null }),
     }),
-  };
+  } as unknown as SupabaseClient;
 }
 
 // 타입 정의

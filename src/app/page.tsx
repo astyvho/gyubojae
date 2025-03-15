@@ -1,3 +1,5 @@
+"use client";
+
 import Clock from "./components/Clock";
 import Weather from "./components/Weather";
 import Todo from "./components/Todo";
