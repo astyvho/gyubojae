@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { ko } from "date-fns/locale";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function Clock() {
@@ -39,8 +38,8 @@ export default function Clock() {
     );
   }
 
-  const formattedTime = format(time, "HH:mm:ss", { locale: ko });
-  const formattedDate = format(time, "M월 d일 (E)", { locale: ko });
+  const formattedTime = format(time, "HH:mm:ss");
+  const formattedDate = format(time, "M월 d일 (E)");
 
   return (
     <Card className="bg-zinc-900 border-zinc-800">
