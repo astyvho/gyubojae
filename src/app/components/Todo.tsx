@@ -116,7 +116,6 @@ export default function Todo() {
     try {
       setError(null);
       // 낙관적 UI 업데이트
-      const previousTodos = [...todos];
       setTodos(prev => prev.filter(todo => todo.id !== id));
 
       await deleteTodo(id);
