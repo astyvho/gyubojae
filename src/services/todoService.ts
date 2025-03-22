@@ -4,19 +4,19 @@ import { supabase, TODOS_TABLE, Todo } from '@/lib/supabase';
 const staticTodos: Todo[] = [
   {
     id: 1,
-    task: '정적 데이터: 환경 변수를 설정해주세요',
+    task: '데이터가 연결이 안됩니다',
     is_completed: false,
     created_at: new Date().toISOString(),
   },
   {
     id: 2,
-    task: 'Vercel에서 환경 변수 설정하기',
+    task: 'Vercel에서 환경 변수를 설정해주세요',
     is_completed: false,
     created_at: new Date().toISOString(),
   },
   {
     id: 3,
-    task: 'Supabase 연결 확인하기',
+    task: 'Supabase 연결 정보를 확인해주세요',
     is_completed: false,
     created_at: new Date().toISOString(),
   }
