@@ -5,19 +5,19 @@ import Link from "next/link";
 export default function Home() {
   const menuItems = [
     {
-      title: "보현 Todo List",
+      title: "보현's Todo List",
       description: "일상적인 할 일을 관리하고 추적하세요",
       path: "/dad-todo",
       color: "bg-blue-600 hover:bg-blue-700"
     },
     {
-      title: "영재 Working Day",
+      title: "영재's Space",
       description: "업무 일정과 중요한 일정을 관리하세요",
       path: "/mom-working",
       color: "bg-purple-600 hover:bg-purple-700"
     },
     {
-      title: "규백 급식알리미",
+      title: "규백's 급식알리미",
       description: "학교 급식 메뉴를 확인하세요",
       path: "/school-meal",
       color: "bg-green-600 hover:bg-green-700"
@@ -29,7 +29,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto space-y-12">
         {/* 메인 타이틀 섹션 */}
         <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-indigo-400">규보재</h1>
+          <h1 className="text-8xl font-bold text-white">G.B.J</h1>
           <p className="text-gray-400 text-lg">우리의 일상과 일정을 한 곳에서 관리하세요</p>
         </div>
 

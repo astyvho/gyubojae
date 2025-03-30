@@ -1,0 +1,14 @@
+급식 알리미 API
+https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=교육청 코드&SD_SCHUL_CODE=행정표준코드&MLSV_YMD=날짜
+
+API 에 필요한 코드 
+ ATPT_OFCDC_SC_CODE	     STRING(필수)	    시도교육청코드
+    SD_SCHUL_CODE	     STRING(필수)	    행정표준코드
+    MMEAL_SC_CODE	     STRING(선택)	    식사코드
+    MLSV_YMD	     STRING(선택)	    급식일자
+
+경기도 교육청 코드 : J10
+행정표준코드 7751034
+
+적용 코드 
+https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=7751034&MLSV_YMD=20250325
