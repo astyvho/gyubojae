@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,14 @@ interface TodoItemProps {
   onEdit: (id: number, newText: string) => void;
 }
 
-export default function TodoItem({
+const TodoItem = forwardRef<HTMLDivElement, TodoItemProps>(({
   id,
   text,
   isDone,
   onToggle,
   onDelete,
   onEdit,
-}: TodoItemProps) {
+}, ref) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
 
@@ -44,6 +44,7 @@ export default function TodoItem({
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -117,4 +118,8 @@ export default function TodoItem({
       )}
     </motion.div>
   );
-} 
+});
+
+TodoItem.displayName = 'TodoItem';
+
+export default TodoItem; 

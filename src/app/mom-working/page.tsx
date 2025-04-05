@@ -262,15 +262,15 @@ export default function MomWorkingPage() {
 
   return (
     <main className="min-h-screen p-8 bg-zinc-950">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center mb-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-purple-400">영재's Space</h1>
           <Link 
             href="/"
-            className="text-gray-400 hover:text-purple-400 transition-colors mr-4"
+            className="text-gray-400 hover:text-purple-400 transition-colors"
           >
-            <ArrowLeft className="h-6 w-6" />
+            ← 메인으로 돌아가기
           </Link>
-          <h1 className="text-2xl font-bold text-purple-400">영재's space</h1>
         </div>
 
         {/* 탭 네비게이션 */}
@@ -307,7 +307,7 @@ export default function MomWorkingPage() {
               <CardContent>
                 <div className="flex justify-between items-center">
                   <div className="text-gray-200">
-                    <p>총 근무 시간: {totalHours.toFixed(1)}시간</p>
+                    <p>총 근무 시간: {Math.floor(totalHours)}시간 {Math.round((totalHours % 1) * 60)}분</p>
                     <p>근무일: {workingDays.length}일</p>
                   </div>
                   <Link href="/mom-working/register">
@@ -408,7 +408,7 @@ export default function MomWorkingPage() {
                         <div className="space-y-1">
                           <p className="text-gray-100">{format(new Date(day.date), "PPP", { locale: ko })}</p>
                           <p className="text-sm text-gray-400">
-                            {day.start_time} ~ {day.end_time} ({Math.floor(day.total_hours)}시간 {Math.round((day.total_hours % 1) * 60)}분)
+                            {day.start_time.substring(0, 5)} ~ {day.end_time.substring(0, 5)} ({Math.floor(day.total_hours)}시간 {Math.round((day.total_hours % 1) * 60)}분)
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">
