@@ -34,6 +34,7 @@ export default function MomWorkingPage() {
   const [newTodo, setNewTodo] = useState("");
   const [editingTodo, setEditingTodo] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  const [todoFilter, setTodoFilter] = useState<'all' | 'active' | 'completed'>('all');
 
   // 근무일 데이터 가져오기
   const fetchWorkingDays = async () => {
@@ -310,7 +311,7 @@ export default function MomWorkingPage() {
                     <p>근무일: {workingDays.length}일</p>
                   </div>
                   <Link href="/mom-working/register">
-                    <Button className="bg-purple-600 hover:bg-purple-700">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white font-medium">
                       근무 등록
                     </Button>
                   </Link>
@@ -397,33 +398,41 @@ export default function MomWorkingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {workingDays.map((day) => (
-                    <Card key={day.id} className="bg-zinc-800 border-zinc-700">
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-gray-200">{day.date}</p>
-                            <p className="text-gray-400">
-                              {day.start_time} - {day.end_time}
-                            </p>
-                            <p className="text-gray-400">
-                              {day.total_hours.toFixed(1)}시간
-                            </p>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-red-400 hover:text-red-500 hover:bg-red-900/20"
-                              onClick={() => handleDelete(day.id)}
-                            >
-                              삭제
-                            </Button>
-                          </div>
+                  <h2 className="text-lg font-semibold text-purple-400">근무 기록</h2>
+                  <div className="space-y-2">
+                    {workingDays.map((day) => (
+                      <div
+                        key={day.id}
+                        className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg"
+                      >
+                        <div className="space-y-1">
+                          <p className="text-gray-100">{format(new Date(day.date), "PPP", { locale: ko })}</p>
+                          <p className="text-sm text-gray-400">
+                            {day.start_time} ~ {day.end_time} ({Math.floor(day.total_hours)}시간 {Math.round((day.total_hours % 1) * 60)}분)
+                          </p>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        <div className="flex items-center space-x-2">
+                          <Link href={`/mom-working/register/${day.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-gray-400 hover:text-purple-400"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-400 hover:text-red-400"
+                            onClick={() => handleDelete(day.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -441,80 +450,125 @@ export default function MomWorkingPage() {
                     value={newTodo}
                     onChange={(e) => setNewTodo(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
-                    placeholder="새로운 할일을 입력하세요"
+                    placeholder="할일을 입력하세요"
                     className="flex-1 bg-zinc-800 border-zinc-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
-                  <Button onClick={handleAddTodo} className="bg-purple-600 hover:bg-purple-700">
+                  <Button onClick={handleAddTodo} className="bg-purple-600 hover:bg-purple-700 text-white">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
 
+                <div className="flex space-x-2 pb-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setTodoFilter('all')}
+                    className={`${
+                      todoFilter === 'all'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'text-gray-400 hover:text-purple-400 hover:bg-purple-900/20'
+                    }`}
+                  >
+                    전체
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setTodoFilter('active')}
+                    className={`${
+                      todoFilter === 'active'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'text-gray-400 hover:text-purple-400 hover:bg-purple-900/20'
+                    }`}
+                  >
+                    미완료
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setTodoFilter('completed')}
+                    className={`${
+                      todoFilter === 'completed'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'text-gray-400 hover:text-purple-400 hover:bg-purple-900/20'
+                    }`}
+                  >
+                    완료
+                  </Button>
+                </div>
+
                 <div className="space-y-2">
-                  {todoItems.map((todo) => (
-                    <div
-                      key={todo.id}
-                      className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg"
-                    >
-                      {editingTodo === todo.id ? (
-                        <div className="flex-1 flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            className="flex-1 bg-zinc-700 border-zinc-600 rounded-md px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-green-400 hover:text-green-500"
-                            onClick={() => handleSaveEdit(todo.id)}
-                          >
-                            저장
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-400 hover:text-gray-500"
-                            onClick={handleCancelEdit}
-                          >
-                            취소
-                          </Button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center space-x-3 flex-1">
+                  {todoItems
+                    .filter(todo => {
+                      if (todoFilter === 'active') return !todo.completed;
+                      if (todoFilter === 'completed') return todo.completed;
+                      return true;
+                    })
+                    .map((todo) => (
+                      <div
+                        key={todo.id}
+                        className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg"
+                      >
+                        {editingTodo === todo.id ? (
+                          <div className="flex-1 flex items-center space-x-2">
                             <input
-                              type="checkbox"
-                              checked={todo.completed}
-                              onChange={() => handleTodoToggle(todo.id)}
-                              className="rounded border-zinc-600 text-purple-600 focus:ring-purple-600"
+                              type="text"
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="flex-1 bg-zinc-700 border-zinc-600 rounded-md px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
-                            <span className={todo.completed ? "text-gray-500 line-through" : "text-white"}>
-                              {todo.title}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-purple-400 hover:text-purple-500"
-                              onClick={() => handleEditTodo(todo.id)}
+                              className="text-green-400 hover:text-green-500"
+                              onClick={() => handleSaveEdit(todo.id)}
                             >
-                              <Pencil className="h-4 w-4" />
+                              저장
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-red-400 hover:text-red-500"
-                              onClick={() => handleDeleteTodo(todo.id)}
+                              className="text-gray-400 hover:text-gray-500"
+                              onClick={handleCancelEdit}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              취소
                             </Button>
                           </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
+                        ) : (
+                          <>
+                            <div className="flex items-center space-x-3 flex-1">
+                              <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => handleTodoToggle(todo.id)}
+                                className="rounded border-zinc-600 text-purple-600 focus:ring-purple-600"
+                              />
+                              <span className={todo.completed ? "text-gray-500 line-through" : "text-white"}>
+                                {todo.title}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-purple-400 hover:text-purple-500"
+                                onClick={() => handleEditTodo(todo.id)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-500"
+                                onClick={() => handleDeleteTodo(todo.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
                 </div>
               </div>
             </CardContent>

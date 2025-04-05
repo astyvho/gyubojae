@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar as CalendarIcon, Clock } from "lucide-react";
@@ -14,8 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useParams, useRouter } from "next/navigation";
 
 interface WorkingDay {
+  id: string;
   date: string;
   start_time: string;
   end_time: string;
@@ -23,7 +25,9 @@ interface WorkingDay {
   user_id: string;
 }
 
-export default function RegisterPage() {
+export default function EditPage() {
+  const params = useParams();
+  const router = useRouter();
   const [date, setDate] = useState<Date>(new Date());
   const [startTime, setStartTime] = useState({ hour: "09", minute: "00" });
   const [endTime, setEndTime] = useState({ hour: "18", minute: "00" });
@@ -43,6 +47,37 @@ export default function RegisterPage() {
     (i * 5).toString().padStart(2, '0')
   );
 
+  useEffect(() => {
+    const fetchWorkingDay = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('working_days')
+          .select('*')
+          .eq('id', params.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching working day:', error);
+          alert('근무 기록을 불러오는 중 오류가 발생했습니다.');
+          return;
+        }
+
+        if (data) {
+          setDate(new Date(data.date));
+          const [startHour, startMinute] = data.start_time.split(':');
+          const [endHour, endMinute] = data.end_time.split(':');
+          setStartTime({ hour: startHour, minute: startMinute });
+          setEndTime({ hour: endHour, minute: endMinute });
+        }
+      } catch (error) {
+        console.error('Error in fetchWorkingDay:', error);
+        alert('근무 기록을 불러오는 중 오류가 발생했습니다.');
+      }
+    };
+
+    fetchWorkingDay();
+  }, [params.id]);
+
   const handleSubmit = async () => {
     try {
       // 시작 시간이 종료 시간보다 늦은 경우
@@ -57,28 +92,26 @@ export default function RegisterPage() {
       const formattedDate = format(date, "yyyy-MM-dd");
       const totalHours = (endTimeNum - startTimeNum) / 60;
 
-      const workingDayData: WorkingDay = {
-        date: formattedDate,
-        start_time: `${startTime.hour}:${startTime.minute}`,
-        end_time: `${endTime.hour}:${endTime.minute}`,
-        total_hours: totalHours,
-        user_id: "1"
-      };
-
       const { error } = await supabase
         .from('working_days')
-        .insert([workingDayData]);
+        .update({
+          date: formattedDate,
+          start_time: `${startTime.hour}:${startTime.minute}`,
+          end_time: `${endTime.hour}:${endTime.minute}`,
+          total_hours: totalHours,
+        })
+        .eq('id', params.id);
 
       if (error) {
-        console.error('Error inserting working day:', error);
-        alert('근무 기록 등록 중 오류가 발생했습니다.');
+        console.error('Error updating working day:', error);
+        alert('근무 기록 수정 중 오류가 발생했습니다.');
         return;
       }
 
-      window.location.href = '/mom-working';
+      router.push('/mom-working');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      alert('근무 기록 등록 중 오류가 발생했습니다.');
+      alert('근무 기록 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -92,12 +125,12 @@ export default function RegisterPage() {
           >
             <ArrowLeft className="h-6 w-6" />
           </Link>
-          <h1 className="text-2xl font-bold text-purple-400">근무 정보 입력</h1>
+          <h1 className="text-2xl font-bold text-purple-400">근무 정보 수정</h1>
         </div>
 
         <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-purple-400">근무일 등록</CardTitle>
+            <CardTitle className="text-purple-400">근무일 수정</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* 날짜 선택 */}
@@ -279,7 +312,7 @@ export default function RegisterPage() {
                 onClick={handleSubmit} 
                 className="bg-purple-600 hover:bg-purple-700 text-white font-medium"
               >
-                등록
+                수정
               </Button>
             </div>
           </CardContent>
