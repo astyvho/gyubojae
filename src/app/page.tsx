@@ -1,25 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const menuItems = [
     {
-      title: "보현's Todo List",
-      description: "일상적인 할 일을 관리하고 추적하세요",
+      title: "보현's Space",
+      description: "보현의 공간입니다.",
       path: "/dad-todo",
       color: "bg-blue-600 hover:bg-blue-700"
     },
     {
       title: "영재's Space",
-      description: "업무 일정과 중요한 일정을 관리하세요",
+      description: "영재의 공간입니다.",
       path: "/mom-working",
       color: "bg-purple-600 hover:bg-purple-700"
     },
     {
-      title: "규백's 급식알리미",
-      description: "학교 급식 메뉴를 확인하세요",
-      path: "/school-meal",
+      title: "규백's Space",
+      description: "규백이의 공간입니다.",
+      path: "/gyubaeks-space",
       color: "bg-green-600 hover:bg-green-700"
     }
   ];
