@@ -107,7 +107,7 @@ export default function Weather() {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
-          <div className="text-6xl">{weatherIcon}</div>
+          <div className="text-4xl">{weatherIcon}</div>
           <div>
             <p className="text-4xl font-bold text-blue-400">
               {weatherData.main.temp.toFixed(1)}°
