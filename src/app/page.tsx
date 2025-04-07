@@ -35,13 +35,11 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text tracking-tight">
             G.B.J
           </h1>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            우리의 일상과 일정을 한 곳에서 관리하세요
-          </p>
+          
         </div>
 
         {/* 시계와 날씨 섹션 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-8">
+        <div className="flex flex-col gap-4 max-w-md mx-auto mb-8">
           <div>
             <Clock />
           </div>
