@@ -22,13 +22,13 @@ export default function Clock() {
 
   return (
     <Card className="bg-zinc-900 border-zinc-800">
-      <CardHeader className="pb-1 pt-3">
+      <CardHeader className="pb-0 pt-0">
         <CardTitle className="flex items-center gap-2 text-lg text-zinc-400">
           <span>⏰</span>
           <span>현재 시각</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-3 space-y-0.5">
+      <CardContent className="pb-0 space-y-0">
         {!mounted ? (
           <>
             <Skeleton className="h-8 w-32 bg-zinc-800" />
