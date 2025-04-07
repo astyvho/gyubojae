@@ -12,7 +12,7 @@ interface WeatherData {
 
 export async function fetchWeather(): Promise<WeatherData> {
   const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=Yongin&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric&lang=kr`
+    `https://api.openweathermap.org/data/2.5/weather?q=Yongin&appid=${process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY}&units=metric&lang=kr`
   );
 
   if (!response.ok) {
