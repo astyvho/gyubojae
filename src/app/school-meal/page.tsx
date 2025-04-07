@@ -13,7 +13,7 @@ export default function SchoolMealPage() {
             href="/gyubaeks-space"
             className="text-gray-400 hover:text-indigo-400 transition-colors"
           >
-            ← 규백's Space로 돌아가기
+            ← 돌아가기
           </Link>
         </div>
 

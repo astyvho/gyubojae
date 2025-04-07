@@ -14,13 +14,15 @@ interface TodoItem {
   created_at: string;
 }
 
+// Supabase 클라이언트 인스턴스를 컴포넌트 외부에서 생성
+const supabase = createClient();
+
 export default function TodoPage() {
   const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [todoFilter, setTodoFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-  const supabase = createClient();
 
   const fetchTodos = async () => {
     const { data, error } = await supabase
@@ -130,7 +132,7 @@ export default function TodoPage() {
             href="/gyubaeks-space"
             className="text-gray-400 hover:text-indigo-400 transition-colors"
           >
-            ← 메인으로 돌아가기
+            ← 돌아가기
           </Link>
         </div>
 
@@ -146,6 +148,12 @@ export default function TodoPage() {
                 <Input
                   value={newTodo}
                   onChange={(e) => setNewTodo(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTodo();
+                    }
+                  }}
                   placeholder="새로운 할일을 입력하세요"
                   className="flex-1 bg-zinc-800 border-zinc-700 text-white"
                 />

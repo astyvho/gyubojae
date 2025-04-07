@@ -15,15 +15,11 @@ export default function DadTodoPage() {
             href="/"
             className="text-gray-400 hover:text-indigo-400 transition-colors"
           >
-            ← 메인으로 돌아가기
+            ← 돌아가기
           </Link>
         </div>
         
-        {/* 시계와 날씨를 나란히 배치 */}
-        <div className="grid grid-cols-2 gap-4">
-          <Clock />
-          <Weather />
-        </div>
+       
 
         {/* Todo 리스트 */}
         <Todo />

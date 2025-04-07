@@ -13,7 +13,7 @@ export default function GyubaekSpacePage() {
             href="/"
             className="text-gray-400 hover:text-indigo-400 transition-colors"
           >
-            ← 메인으로 돌아가기
+            ← 돌아가기
           </Link>
         </div>
 

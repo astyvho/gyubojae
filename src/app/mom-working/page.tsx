@@ -269,7 +269,7 @@ export default function MomWorkingPage() {
             href="/"
             className="text-gray-400 hover:text-purple-400 transition-colors"
           >
-            ← 메인으로 돌아가기
+            ← 돌아가기
           </Link>
         </div>
 
